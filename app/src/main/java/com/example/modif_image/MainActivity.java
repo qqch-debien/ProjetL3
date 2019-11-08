@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    public void revContrastDE(Bitmap bmp, int max, int min){
+    public void revContrastDE(Bitmap bmp, int max, int min){/*
         int width=bmp.getWidth();
         int height=bmp.getHeight();
         int[] LUT=new int[256];
@@ -524,8 +524,8 @@ public class MainActivity extends AppCompatActivity {
         bmp.getPixels(colors,0,width,0,0,width,height);
 
         for(int i=0;i<colors.length;i++){
-            
+
         }
-    }
+    }*/
 
 }
