@@ -102,8 +102,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*contrastDE(bm);
-        im.setImageBitmap(bm);*/
+        grayContrastHE(bm);
+        im.setImageBitmap(bm);
     }
 
 
@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    public void revContrastDE(Bitmap bmp, int max, int min){/*
+    public void revContrastDE(Bitmap bmp, int max, int min){
         int width=bmp.getWidth();
         int height=bmp.getHeight();
         int[] LUT=new int[256];
@@ -518,14 +518,29 @@ public class MainActivity extends AppCompatActivity {
 
     //Contraste couleur (Egalisation d’histogramme)
     public void grayContrastHE(Bitmap bmp){
+        int gray;
         int width=bmp.getWidth();
         int height=bmp.getHeight();
         int[] colors = new int[width*height];
         bmp.getPixels(colors,0,width,0,0,width,height);
 
-        for(int i=0;i<colors.length;i++){
-
+        int[] hist=new int[256];
+        for(int i=0;i<256;i++){
+            hist[i]=0;
         }
-    }*/
+
+        for(int i=0;i<colors.length;i++){
+            hist[Color.red(colors[i])]++;
+        }
+
+        for(int i=1;i<256;i++){
+            hist[i]+=hist[i-1];
+        }
+        for(int i=0;i<colors.length;i++){
+            gray = (hist[Color.red(colors[i])]*255)/hist[255];
+            colors[i]=Color.rgb(gray,gray,gray);
+        }
+        bmp.setPixels(colors,0,width,0,0,width,height);
+    }
 
 }
