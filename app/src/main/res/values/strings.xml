@@ -5,6 +5,7 @@
     <string name="reset">Reset</string>
     <string name="hue">Hue</string>
     <string name="effect">Effect</string>
-    <string name="contrast">contrast</string>
+    <string name="contrastDE">Dynamic extension</string>
+    <string name="contrastHE">Histogram equalization</string>
     <string name="decontrast">reverse contrast</string>
 </resources>

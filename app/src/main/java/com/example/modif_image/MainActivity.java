@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inMutable = true;
-        o.inScaled = true;
-        final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.contrast_faible,o);
+        o.inScaled = false;
+        final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_che,o);
         //final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_cde,o);
         final ImageView im = findViewById(R.id.imTest);
 
@@ -102,8 +102,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        grayContrastHE(bm);
-        im.setImageBitmap(bm);
+        Button contrastHE = findViewById(R.id.contrastHE);
+        contrastHE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                grayContrastHE(bm);
+                im.setImageBitmap(bm);
+            }
+        });
+
     }
 
 
