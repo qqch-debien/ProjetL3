@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Modif_image</string>
+    <string name="size">size</string>
+    <string name="image_color">gray</string>
+    <string name="reset">Reset</string>
+    <string name="hue">Hue</string>
+    <string name="effect">Effect</string>
+    <string name="contrast">contrast</string>
+    <string name="decontrast">reverse contrast</string>
+</resources>
