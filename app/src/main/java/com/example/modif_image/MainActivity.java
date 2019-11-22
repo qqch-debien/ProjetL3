@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //effet de "mise en avant" d'une couleur
-    public void effect(Bitmap bmp){
+    public void effect(Bitmap bmp){ //laisser le choix à l'utilisateur
         int r, g, b, gray;
         int width = bmp.getWidth(), height=bmp.getHeight();
         int[] colors = new int[width*height];
@@ -485,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
         int max_b=max_b(colors);
 
         for(int i=0;i<256;i++){
-            LUTr[i]= (int)(255.f*(i-min_r))/(max_r-min_r);
+            LUTr[i]= (int)(255.f*(i-min_r))/(max_r-min_r); //traiter le cas où l'image est uniforme (max=min)
             LUTg[i]= (int)(255.f*(i-min_g))/(max_g-min_g);
             LUTb[i]= (int)(255.f*(i-min_b))/(max_b-min_b);
         }
@@ -501,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
+    //augmentation du contraste (reverse contrast)
     public void revContrastDE(Bitmap bmp, int max, int min){
         int width=bmp.getWidth();
         int height=bmp.getHeight();
@@ -523,7 +524,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    //Contraste couleur (Egalisation d’histogramme)
+    //Contraste noir et blanc (Egalisation d’histogramme)
     public void grayContrastHE(Bitmap bmp){
         int gray;
         int width=bmp.getWidth();
@@ -531,7 +532,7 @@ public class MainActivity extends AppCompatActivity {
         int[] colors = new int[width*height];
         bmp.getPixels(colors,0,width,0,0,width,height);
 
-        int[] hist=new int[256];
+        int[] hist=new int[256]; //faire attention au "int" pour les grosses valeures
         for(int i=0;i<256;i++){
             hist[i]=0;
         }
@@ -548,6 +549,11 @@ public class MainActivity extends AppCompatActivity {
             colors[i]=Color.rgb(gray,gray,gray);
         }
         bmp.setPixels(colors,0,width,0,0,width,height);
+    }
+
+    //Contraste couleur (Egalisation d’histogramme)
+    public void ContrastHE(Bitmap bmp){ //faire avec hsv et pas rgb
+
     }
 
 }
