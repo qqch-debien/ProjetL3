@@ -1,13 +1,14 @@
 package com.example.modif_image;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.renderscript.Allocation;
+import androidx.renderscript.RenderScript;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inMutable = true;
         o.inScaled = false;
-        final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_che,o);
+        final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.mq_ilet,o);
         //final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_cde,o);
         final ImageView im = findViewById(R.id.imTest);
 
@@ -111,9 +112,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
 
+    private void invertRS(Bitmap bmp){
+
+        RenderScript rs = RenderScript.create(this);
+
+        Allocation input = Allocation.createFromBitmap(rs,bmp);
+        Allocation output = Allocation.createTyped(rs, input.getType());
+
+        ScriptC_invert invertScript = new ScriptC_invert(rs);
+
+        invertScript.forEach_toInvert(input,output);
+
+        output.copyTo(bmp);
+
+        input.destroy() ; output.destroy() ;
+        invertScript.destroy(); rs.destroy();
+    }
 
 
     //conversion en noir et blanc
