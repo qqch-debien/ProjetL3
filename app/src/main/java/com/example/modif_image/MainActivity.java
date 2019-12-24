@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.renderscript.Allocation;
 import androidx.renderscript.RenderScript;
+import androidx.renderscript.ScriptC;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,18 +23,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inMutable = true;
         o.inScaled = false;
-        final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.mq_ilet,o);
-        //final Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_cde,o);
+        final Bitmap bm_c = BitmapFactory.decodeResource(getResources(), R.drawable.mq_ilet,o);
+        final Bitmap bm_DE = BitmapFactory.decodeResource(getResources(), R.drawable.contrast_faible,o);
+        final Bitmap bm_NoirBlanc_HE = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_che,o);
+        final Bitmap bm = bm_c;
         final ImageView im = findViewById(R.id.imTest);
 
         final int height = bm.getHeight();
-        final int width = bm.getWidth();
+        final int width= bm.getWidth();
 
-        final int[] colors = new int[height*width];
+        final int[] colors = new int[bm.getHeight()*bm.getWidth()];
         bm.getPixels(colors,0,width,0,0,width,height);
+
 
         //affichage de la taille de la bipmap.
         TextView tv = findViewById(R.id.size);
@@ -55,12 +60,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button image = findViewById(R.id.image);
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                im.setImageBitmap(bm_c);
+            }
+        });
+
+        Button imageDE = findViewById(R.id.imageDE);
+        imageDE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                im.setImageBitmap(bm_DE);
+            }
+        });
+
+        Button imageHE = findViewById(R.id.grayImageHE);
+        imageHE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                im.setImageBitmap(bm_NoirBlanc_HE);
+            }
+        });
 
         Button gray = findViewById(R.id.button_gray);
         gray.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toGray2(bm);
+                toGrayRS(bm);
                 im.setImageBitmap(bm);
             }
         });
@@ -107,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         contrastHE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                grayContrastHE(bm);
+                ContrastHE(bm);
                 im.setImageBitmap(bm);
             }
         });
@@ -168,6 +196,22 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
+    public void toGrayRS(Bitmap bmp){
+        RenderScript rs = RenderScript.create(this);
+
+        Allocation input = Allocation.createFromBitmap(rs,bmp);
+        Allocation output = Allocation.createTyped(rs,input.getType());
+
+        ScriptC_gray grayScript = new ScriptC_gray(rs);
+
+        grayScript.forEach_toGray(input,output);
+
+        output.copyTo(bmp);
+
+        input.destroy(); output.destroy();
+        grayScript.destroy(); rs.destroy();
+    }
+
     public void colorize(Bitmap bmp){
         int r, g, b;
         //float[] hsv=new float[3];
@@ -184,10 +228,10 @@ public class MainActivity extends AppCompatActivity {
             g = Color.green(colors[i]);
             b = Color.blue(colors[i]);
             //Color.colorToHSV(Color.rgb(r,g,b),hsv);
-            float[] hsv=rgbtohsv(r,g,b);
+            float[] hsv=rgbToHsv(r,g,b);
             hsv[0]= hue;
             //colors[i]=Color.HSVToColor(hsv);
-            colors[i]=hsvtorgb(hsv);
+            colors[i]=hsvToRgb(hsv);
         }
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
@@ -201,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public float[] rgbtohsv(int red, int green, int blue){
+    public float[] rgbToHsv(int red, int green, int blue){
         float[] hsv=new float[3];
         float H,S,V;
 
@@ -244,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         return hsv;
     }
 
-    public int hsvtorgb(float[] hsv){
+    public int hsvToRgb(float[] hsv){
         int r, g, b;
         float C, X, m;
         float r2=0; float g2=0; float b2=0;
@@ -572,6 +616,35 @@ public class MainActivity extends AppCompatActivity {
 
     //Contraste couleur (Egalisation d’histogramme)
     public void ContrastHE(Bitmap bmp){ //faire avec hsv et pas rgb
+
+        int r,g,b;
+        int width=bmp.getWidth();
+        int height=bmp.getHeight();
+        int[] colors = new int[width*height];
+        float[][] hsv = new float[colors.length][3];
+        bmp.getPixels(colors,0,width,0,0,width,height);
+
+        float[] hist= new float[360]; //faire attention au "int" pour les grosses valeures
+        for(int i=0;i<360;i++){
+            hist[i]=0;
+        }
+
+        for(int i=0;i<colors.length;i++){
+            r = Color.red(colors[i]);
+            g = Color.green(colors[i]);
+            b = Color.blue(colors[i]);
+            hsv[i] = rgbToHsv(r,g,b);
+            hist[((int)hsv[i][0])+180]++;
+        }
+
+        for(int i=1;i<360;i++){
+            hist[i]+=hist[i-1];
+        }
+        for(int i=0;i<colors.length;i++){
+            hsv[i][0] = (hist[((int)hsv[i][0])+180]*359)/hist[359];
+            colors[i]=hsvToRgb(hsv[i]);
+        }
+        bmp.setPixels(colors,0,width,0,0,width,height);
 
     }
 
