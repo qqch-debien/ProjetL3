@@ -17,7 +17,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.724" />
+        app:layout_constraintVertical_bias="0.108" />
 
     <Button
         android:id="@+id/hue"
@@ -28,8 +28,8 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.727" />
+        app:layout_constraintTop_toBottomOf="@+id/imTest"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/button_gray"
@@ -41,8 +41,8 @@
         app:layout_constraintHorizontal_bias="0.195"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.727" />
+        app:layout_constraintTop_toBottomOf="@+id/imTest"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/gray_contrast"
@@ -50,11 +50,12 @@
         android:layout_height="wrap_content"
         android:text="@string/contrastDE"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/contrastHE"
         app:layout_constraintHorizontal_bias="0.102"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.797" />
+        app:layout_constraintTop_toBottomOf="@+id/button_gray"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/effect"
@@ -66,8 +67,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toEndOf="@+id/hue"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.727" />
+        app:layout_constraintTop_toTopOf="@+id/hue"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/reset"
@@ -84,14 +85,17 @@
         android:id="@+id/reverseContrast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="124dp"
+        android:layout_marginLeft="124dp"
         android:text="@string/decontrast"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.007"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/gray_contrast"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.797" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/contrastHE"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/contrastHE"
@@ -99,52 +103,16 @@
         android:layout_height="wrap_content"
         android:text="@string/contrastHE"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.868" />
-
-    <Button
-        android:id="@+id/imageDE"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/imageDE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imTest"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/grayImageHE"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/imageHE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imTest"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="284dp"
-        android:text="@string/image"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imTest"
+        app:layout_constraintTop_toBottomOf="@+id/hue"
         app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/imTest"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:adjustViewBounds="false"
         android:contentDescription="@string/size"
         android:src="@drawable/mq_ilet"
@@ -153,6 +121,19 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.386" />
+        app:layout_constraintVertical_bias="0.385" />
+
+    <SeekBar
+        android:id="@+id/ChangeImage"
+        android:layout_width="328dp"
+        android:layout_height="18dp"
+        android:max="3"
+        android:progress="0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.171" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

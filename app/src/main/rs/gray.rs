@@ -1,13 +1,14 @@
 # pragma version (1)
 # pragma rs java_package_name (com.example.modif_image)
 
-static const weight = {0.299f, 0.587f, 0.114f, 0.0f};
 
 uchar4 RS_KERNEL toGray(uchar4 in){
 
-    const float4 pixelf = rsUnpackColor8888(in);
+    float4 pixelf = rsUnpackColor8888(in);
 
-    const float gray = dot(pixelf,weight);
+    float gray = (0.299f*pixelf.r +
+                  0.587f*pixelf.g +
+                  0.114f*pixelf.b);
 
     return rsPackColorTo8888(gray , gray , gray , pixelf.a);
 

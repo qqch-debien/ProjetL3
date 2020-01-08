@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -27,118 +28,124 @@ public class MainActivity extends AppCompatActivity {
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inMutable = true;
         o.inScaled = false;
+
         final Bitmap bm_c = BitmapFactory.decodeResource(getResources(), R.drawable.mq_ilet,o);
         final Bitmap bm_DE = BitmapFactory.decodeResource(getResources(), R.drawable.contrast_faible,o);
-        final Bitmap bm_NoirBlanc_HE = BitmapFactory.decodeResource(getResources(), R.drawable.noir_blanc_che,o);
-        final Bitmap bm = bm_c;
+        final Bitmap bm_HE = BitmapFactory.decodeResource(getResources(), R.drawable.che2,o);
+        final Bitmap bm_HE_DE = BitmapFactory.decodeResource(getResources(), R.drawable.che,o);
+
         final ImageView im = findViewById(R.id.imTest);
 
-        final int height = bm.getHeight();
-        final int width= bm.getWidth();
+        final SeekBar choose = findViewById(R.id.ChangeImage);
 
-        final int[] colors = new int[bm.getHeight()*bm.getWidth()];
-        bm.getPixels(colors,0,width,0,0,width,height);
+        final Bitmap[] images = {bm_c,bm_DE,bm_HE,bm_HE_DE};
 
+        final int height = images[0].getHeight();
+        final int width = images[0].getWidth();
 
-        //affichage de la taille de la bipmap.
-        TextView tv = findViewById(R.id.size);
-        tv.setText("height = "+height+"\n"+"width = "+width);
+        final TextView tv = findViewById(R.id.size);
+        tv.setText("width = " + width + "\nheight = " + height);
 
-        final Button reset=findViewById(R.id.reset);
-        reset.setOnClickListener(new View.OnClickListener() {
+        choose.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                int r,g,b;
-                for (int i=0; i<colors.length;i++){
-                    r=Color.red(colors[i]);
-                    g=Color.green(colors[i]);
-                    b=Color.blue(colors[i]);
-                    colors[i]=Color.rgb(r,g,b);
-                }
-                bm.setPixels(colors,0,width,0,0,width,height);
-                im.setImageBitmap(bm);
-            }
-        });
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                final Bitmap bm = images[progress].copy(images[progress].getConfig(),true);
 
-        Button image = findViewById(R.id.image);
-        image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                im.setImageBitmap(bm_c);
-            }
-        });
+                final int height = bm.getHeight();
+                final int width = bm.getWidth();
 
-        Button imageDE = findViewById(R.id.imageDE);
-        imageDE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                im.setImageBitmap(bm_DE);
-            }
-        });
+                final int[] colors = new int[width*height];
+                bm.getPixels(colors,0,width,0,0,width,height);
 
-        Button imageHE = findViewById(R.id.grayImageHE);
-        imageHE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                im.setImageBitmap(bm_NoirBlanc_HE);
-            }
-        });
-
-        Button gray = findViewById(R.id.button_gray);
-        gray.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toGrayRS(bm);
-                im.setImageBitmap(bm);
-            }
-        });
-
-        Button hue = findViewById(R.id.hue);
-        hue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                colorize(bm);
-                im.setImageBitmap(bm);
-            }
-        });
-
-        Button effect = findViewById(R.id.effect);
-        effect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                effect(bm);
-                im.setImageBitmap(bm);
-            }
-        });
-
-
-        Button contrast=findViewById(R.id.gray_contrast);
-        contrast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                contrastDE(bm);
-                im.setImageBitmap(bm);
-            }
-        });
-
-        Button reverseContrast = findViewById(R.id.reverseContrast);
-        reverseContrast.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                revContrastDE(bm,192,53);
                 im.setImageBitmap(bm);
 
+                tv.setText("width = " + width + "\nheight = " + height);
+
+                final Button reset=findViewById(R.id.reset);
+                reset.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int r, g, b;
+                        for (int i = 0; i < colors.length; i++) {
+                            r = Color.red(colors[i]);
+                            g = Color.green(colors[i]);
+                            b = Color.blue(colors[i]);
+                            colors[i] = Color.rgb(r, g, b);
+                        }
+                        bm.setPixels(colors, 0, width, 0, 0, width, height);
+                        im.setImageBitmap(bm);
+                    }
+                });
+
+                Button gray = findViewById(R.id.button_gray);
+                gray.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        toGray(bm);
+                        im.setImageBitmap(bm);
+                    }
+                });
+
+                Button hue = findViewById(R.id.hue);
+                hue.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        colorize(bm);
+                        im.setImageBitmap(bm);
+                    }
+                });
+
+                Button effect = findViewById(R.id.effect);
+                effect.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        effect(bm);
+                        im.setImageBitmap(bm);
+                    }
+                });
+
+
+                Button contrast=findViewById(R.id.gray_contrast);
+                contrast.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contrastDE(bm);
+                        im.setImageBitmap(bm);
+                    }
+                });
+
+                Button reverseContrast = findViewById(R.id.reverseContrast);
+                reverseContrast.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        revContrastDE(bm,192,53);
+                        im.setImageBitmap(bm);
+
+                    }
+                });
+
+                Button contrastHE = findViewById(R.id.contrastHE);
+                contrastHE.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contrastHE(bm);
+                        im.setImageBitmap(bm);
+                    }
+                });
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
-        Button contrastHE = findViewById(R.id.contrastHE);
-        contrastHE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ContrastHE(bm);
-                im.setImageBitmap(bm);
-            }
-        });
+
 
 
 
@@ -178,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     /*Création d'une liste où chaque élément est la "couleur" d'un pixel (getPixels())
     Modification des éléments de la liste pour obtenir leurs équivalent en noir et blanc
     Remplacement des pixels de la bipmap avec les couleurs de la liste (setPixels())*/
@@ -347,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //effet de "mise en avant" d'une couleur
-    public void effect(Bitmap bmp){ //laisser le choix à l'utilisateur
+    public void effect(Bitmap bmp){ //à corriger : laisser le choix à l'utilisateur
         int r, g, b, gray;
         int width = bmp.getWidth(), height=bmp.getHeight();
         int[] colors = new int[width*height];
@@ -366,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    //Contraste noir et blanc (extention dynamique)
+    //Contraste noire et blanc (extention dynamique)
     public int max_ng(int[] colors){
         int m=Color.red(colors[0]);
         int c_r;
@@ -409,6 +417,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
+    //ici on utilise la "Look Up Table"
     public void grayContrastDE2(Bitmap bmp){
         int width=bmp.getWidth();
         int height=bmp.getHeight();
@@ -564,7 +573,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    //augmentation du contraste (reverse contrast)
+    //diminution du contraste (reverse contrast)
     public void revContrastDE(Bitmap bmp, int max, int min){
         int width=bmp.getWidth();
         int height=bmp.getHeight();
@@ -595,7 +604,7 @@ public class MainActivity extends AppCompatActivity {
         int[] colors = new int[width*height];
         bmp.getPixels(colors,0,width,0,0,width,height);
 
-        int[] hist=new int[256]; //faire attention au "int" pour les grosses valeures
+        int[] hist=new int[256]; //à corriger : faire attention au "int" pour les grosses valeurs
         for(int i=0;i<256;i++){
             hist[i]=0;
         }
@@ -615,34 +624,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Contraste couleur (Egalisation d’histogramme)
-    public void ContrastHE(Bitmap bmp){ //faire avec hsv et pas rgb
+    public void contrastHE(Bitmap bmp){ //indication : faire avec hsv et pas rgb
 
         int r,g,b;
         int width=bmp.getWidth();
         int height=bmp.getHeight();
         int[] colors = new int[width*height];
-        float[][] hsv = new float[colors.length][3];
         bmp.getPixels(colors,0,width,0,0,width,height);
 
-        float[] hist= new float[360]; //faire attention au "int" pour les grosses valeures
-        for(int i=0;i<360;i++){
-            hist[i]=0;
+        int[] hist_r= new int[256]; //à corriger : faire attention au "int" pour les grosses valeurs
+        int[] hist_g= new int[256];
+        int[] hist_b= new int[256];
+
+        for(int i=0;i<255;i++){
+            hist_r[i]=0;
+            hist_g[i]=0;
+            hist_b[i]=0;
+
         }
 
         for(int i=0;i<colors.length;i++){
-            r = Color.red(colors[i]);
-            g = Color.green(colors[i]);
-            b = Color.blue(colors[i]);
-            hsv[i] = rgbToHsv(r,g,b);
-            hist[((int)hsv[i][0])+180]++;
+            hist_r[Color.red(colors[i])]++;
+            hist_g[Color.green(colors[i])]++;
+            hist_b[Color.blue(colors[i])]++;
+
         }
 
-        for(int i=1;i<360;i++){
-            hist[i]+=hist[i-1];
+        for(int i=1;i<255;i++){
+            hist_r[i]+=hist_r[i-1];
+            hist_g[i]+=hist_g[i-1];
+            hist_b[i]+=hist_b[i-1];
         }
         for(int i=0;i<colors.length;i++){
-            hsv[i][0] = (hist[((int)hsv[i][0])+180]*359)/hist[359];
-            colors[i]=hsvToRgb(hsv[i]);
+            r = (hist_r[Color.red(colors[i])]*254)/hist_r[254];
+            g = (hist_r[Color.green(colors[i])]*254)/hist_r[254];
+            b = (hist_r[Color.blue(colors[i])]*254)/hist_r[254];
+
+            colors[i]=Color.rgb(r,g,b);
         }
         bmp.setPixels(colors,0,width,0,0,width,height);
 
