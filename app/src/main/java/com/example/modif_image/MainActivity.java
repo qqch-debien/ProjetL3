@@ -33,18 +33,16 @@ public class MainActivity extends AppCompatActivity {
         final Bitmap bm_DE = BitmapFactory.decodeResource(getResources(), R.drawable.contrast_faible,o);
         final Bitmap bm_HE = BitmapFactory.decodeResource(getResources(), R.drawable.che2,o);
         final Bitmap bm_HE_DE = BitmapFactory.decodeResource(getResources(), R.drawable.che,o);
+        final Bitmap bm_Concolve = BitmapFactory.decodeResource(getResources(), R.drawable.convolve,o);
 
         final ImageView im = findViewById(R.id.imTest);
 
         final SeekBar choose = findViewById(R.id.ChangeImage);
 
-        final Bitmap[] images = {bm_c,bm_DE,bm_HE,bm_HE_DE};
-
-        final int height = images[0].getHeight();
-        final int width = images[0].getWidth();
+        final Bitmap[] images = {bm_c,bm_DE,bm_HE,bm_HE_DE,bm_Concolve};
 
         final TextView tv = findViewById(R.id.size);
-        tv.setText("width = " + width + "\nheight = " + height);
+        tv.setText("Choose a Picture");
 
         choose.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -128,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 contrastHE.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        contrastHE(bm);
+                        convolve(bm,5);
                         im.setImageBitmap(bm);
                     }
                 });
@@ -354,6 +352,29 @@ public class MainActivity extends AppCompatActivity {
         return Color.rgb(r,g,b);
     }
 
+    /*public void colorizeRS(Bitmap bmp){
+
+        Random rnd = new Random();
+        float hue = rnd.nextFloat()*360.f;
+
+        RenderScript rs = RenderScript.create(this);
+
+        Allocation input = Allocation.createFromBitmap(rs,bmp);
+        Allocation output = Allocation.createTyped(rs,input.getType());
+
+        ScriptC_colorize colorizeScript = new ScriptC_colorize(rs);
+
+        colorizeScript.set_rnd(hue);
+
+        colorizeScript.invoke_colorize(input,output);
+
+        output.copyTo(bmp);
+
+        input.destroy(); output.destroy();
+        colorizeScript.destroy(); rs.destroy();
+
+    }*/
+
     //effet de "mise en avant" d'une couleur
     public void effect(Bitmap bmp){ //à corriger : laisser le choix à l'utilisateur
         int r, g, b, gray;
@@ -371,97 +392,6 @@ public class MainActivity extends AppCompatActivity {
                 colors[i]=Color.rgb(gray,gray,gray);
             }
         }
-        bmp.setPixels(colors,0,width,0,0,width,height);
-    }
-
-    //Contraste noire et blanc (extention dynamique)
-    public int max_ng(int[] colors){
-        int m=Color.red(colors[0]);
-        int c_r;
-        for(int c:colors){
-            c_r=Color.red(c);
-            if(m<c_r){
-                m=c_r;
-            }
-        }
-        return m;
-    }
-
-    public int min_ng(int[] colors){
-        int m=Color.red(colors[0]);
-        int c_r;
-        for(int c:colors){
-            c_r=Color.red(c);
-            if(m>c_r){
-                m=c_r;
-            }
-        }
-        return m;
-    }
-
-    public void grayContrastDE(Bitmap bmp){
-        int width=bmp.getWidth();
-        int height=bmp.getHeight();
-        int[] colors = new int[width*height];
-        bmp.getPixels(colors,0,width,0,0,width,height);
-
-        int min_ng=min_ng(colors);
-        int max_ng=max_ng(colors);
-
-        int gray;
-        for(int i=0;i<colors.length;i++){
-            gray=Color.red(colors[i]);
-            gray=(255*(gray-min_ng))/(max_ng-min_ng);
-            colors[i]=Color.rgb(gray,gray,gray);
-        }
-        bmp.setPixels(colors,0,width,0,0,width,height);
-    }
-
-    //ici on utilise la "Look Up Table"
-    public void grayContrastDE2(Bitmap bmp){
-        int width=bmp.getWidth();
-        int height=bmp.getHeight();
-        int[] LUT=new int[256];
-        int[] colors = new int[width*height];
-        bmp.getPixels(colors,0,width,0,0,width,height);
-
-        int min_ng=min_ng(colors);
-        int max_ng=max_ng(colors);
-
-        for(int i=0;i<256;i++){
-            LUT[i]= (int)(255.f*(i-min_ng))/(max_ng-min_ng);
-        }
-
-        int c_r;
-        int gray;
-        for(int i=0;i<colors.length;i++){
-            c_r=Color.red(colors[i]);
-            gray=LUT[c_r];
-            colors[i]=Color.rgb(gray,gray,gray);
-        }
-
-        bmp.setPixels(colors,0,width,0,0,width,height);
-    }
-
-    public void grayRevContrastDE(Bitmap bmp, int max, int min){
-        int width=bmp.getWidth();
-        int height=bmp.getHeight();
-        int[] LUT=new int[256];
-        int[] colors = new int[width*height];
-        bmp.getPixels(colors,0,width,0,0,width,height);
-
-        for(int i=0;i<256;i++){
-            LUT[i]= (int)((i*(max-min))/255.f)+min;
-        }
-
-        int c_r;
-        int gray;
-        for(int i=0;i<colors.length;i++){
-            c_r=Color.red(colors[i]);
-            gray=LUT[c_r];
-            colors[i]=Color.rgb(gray,gray,gray);
-        }
-
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
@@ -596,33 +526,6 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    //Contraste noir et blanc (Egalisation d’histogramme)
-    public void grayContrastHE(Bitmap bmp){
-        int gray;
-        int width=bmp.getWidth();
-        int height=bmp.getHeight();
-        int[] colors = new int[width*height];
-        bmp.getPixels(colors,0,width,0,0,width,height);
-
-        int[] hist=new int[256]; //à corriger : faire attention au "int" pour les grosses valeurs
-        for(int i=0;i<256;i++){
-            hist[i]=0;
-        }
-
-        for(int i=0;i<colors.length;i++){
-            hist[Color.red(colors[i])]++;
-        }
-
-        for(int i=1;i<256;i++){
-            hist[i]+=hist[i-1];
-        }
-        for(int i=0;i<colors.length;i++){
-            gray = (hist[Color.red(colors[i])]*255)/hist[255];
-            colors[i]=Color.rgb(gray,gray,gray);
-        }
-        bmp.setPixels(colors,0,width,0,0,width,height);
-    }
-
     //Contraste couleur (Egalisation d’histogramme)
     public void contrastHE(Bitmap bmp){ //indication : faire avec hsv et pas rgb
 
@@ -656,14 +559,54 @@ public class MainActivity extends AppCompatActivity {
             hist_b[i]+=hist_b[i-1];
         }
         for(int i=0;i<colors.length;i++){
-            r = (hist_r[Color.red(colors[i])]*254)/hist_r[254];
-            g = (hist_r[Color.green(colors[i])]*254)/hist_r[254];
-            b = (hist_r[Color.blue(colors[i])]*254)/hist_r[254];
-
+            if(Color.red(colors[i])!= 255 && Color.green(colors[i])!= 255 && Color.blue(colors[i])!= 255) {
+                r = (hist_r[Color.red(colors[i])] * 254) / hist_r[254];
+                g = (hist_r[Color.green(colors[i])] * 254) / hist_r[254];
+                b = (hist_r[Color.blue(colors[i])] * 254) / hist_r[254];
+            }else {
+                r=255; g=255; b=255;
+            }
             colors[i]=Color.rgb(r,g,b);
         }
         bmp.setPixels(colors,0,width,0,0,width,height);
 
+    }
+
+    public void convolve(Bitmap bmp, int n){
+        int height = bmp.getHeight();
+        int width = bmp.getWidth();
+        int [] colors = new int[width*height];
+        int [] convolveColors = new int[width*height];
+
+        bmp.getPixels(colors,0,width,0,0,width,height);
+
+        int line = 0;
+        float convolveValue_r = 0;
+        float convolveValue_g = 0;
+        float convolveValue_b = 0;
+
+        for(int i=0;i<colors.length;i+=width){
+            for(int j=0;j<width;j++){
+                if(j<(n-1)/2 || j>=width-((n-1)/2) || line<(n-1)/2 || line>=height-((n-1)/2)){
+                    convolveColors[i+j]= Color.rgb(0,0,0);
+                }
+                else{
+                    for(int k=i-width*((n-1)/2); k<i+width*((n-1)/2); k+=width){
+                        for(int l=j-((n-1)/2); l<j+((n-1)/2); l++){
+                            convolveValue_r+=Color.red(colors[k+l]);
+                            convolveValue_g+=Color.green(colors[k+l]);
+                            convolveValue_b+=Color.blue(colors[k+l]);
+                        }
+                    }
+                    convolveColors[i+j]= Color.rgb((int) convolveValue_r/(n*n),(int) convolveValue_g/(n*n),(int) convolveValue_b/(n*n));
+                    convolveValue_r=0;
+                    convolveValue_g=0;
+                    convolveValue_b=0;
+                }
+            }
+            line++;
+        }
+        bmp.setPixels(convolveColors,0,width,0,0,width,height);
     }
 
 }
