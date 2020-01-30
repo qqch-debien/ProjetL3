@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.renderscript.Allocation;
 import androidx.renderscript.RenderScript;
-import androidx.renderscript.ScriptC;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         final Bitmap bm_DE = BitmapFactory.decodeResource(getResources(), R.drawable.contrast_faible,o);
         final Bitmap bm_HE = BitmapFactory.decodeResource(getResources(), R.drawable.che2,o);
         final Bitmap bm_HE_DE = BitmapFactory.decodeResource(getResources(), R.drawable.che,o);
-        final Bitmap bm_Concolve = BitmapFactory.decodeResource(getResources(), R.drawable.convolve,o);
+        final Bitmap bm_Concolve = BitmapFactory.decodeResource(getResources(), R.drawable.convolve2,o);
 
         final ImageView im = findViewById(R.id.imTest);
 
@@ -79,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 gray.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        toGray(bm);
+                        toGray2(bm);
                         im.setImageBitmap(bm);
                     }
                 });
@@ -112,11 +111,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                Button reverseContrast = findViewById(R.id.reverseContrast);
-                reverseContrast.setOnClickListener(new View.OnClickListener() {
+                Button convolve = findViewById(R.id.convolve);
+                convolve.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        revContrastDE(bm,192,53);
+                        convolve(bm,15);
                         im.setImageBitmap(bm);
 
                     }
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 contrastHE.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        convolve(bm,5);
+                        contrastHE(bm);
                         im.setImageBitmap(bm);
                     }
                 });
@@ -150,6 +149,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Apply a negative effect on th bitmap.
+     *
+     * @param bmp The bitmap to modify.
+     */
     private void invertRS(Bitmap bmp){
 
         RenderScript rs = RenderScript.create(this);
@@ -184,9 +188,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*Création d'une liste où chaque élément est la "couleur" d'un pixel (getPixels())
-    Modification des éléments de la liste pour obtenir leurs équivalent en noir et blanc
-    Remplacement des pixels de la bipmap avec les couleurs de la liste (setPixels())*/
+    /**
+     * Put the bitmap in gray.
+     *
+     * @param bmp The bitmap to modify.
+     */
     public void toGray2(Bitmap bmp){
         int r, g, b, gray;
         int width = bmp.getWidth(), height=bmp.getHeight();
@@ -218,6 +224,11 @@ public class MainActivity extends AppCompatActivity {
         grayScript.destroy(); rs.destroy();
     }
 
+    /**
+     * Change the bitmap hue in a random way.
+     *
+     * @param bmp The bitmap to modify.
+     */
     public void colorize(Bitmap bmp){
         int r, g, b;
         //float[] hsv=new float[3];
@@ -375,7 +386,11 @@ public class MainActivity extends AppCompatActivity {
 
     }*/
 
-    //effet de "mise en avant" d'une couleur
+    /**
+     * Put in gray the Bitmap except one or several color(s).
+     *
+     * @param bmp The bitmap to modify.
+     */
     public void effect(Bitmap bmp){ //à corriger : laisser le choix à l'utilisateur
         int r, g, b, gray;
         int width = bmp.getWidth(), height=bmp.getHeight();
@@ -468,6 +483,11 @@ public class MainActivity extends AppCompatActivity {
         return m;
     }
 
+    /**
+     * Increase the contrast of the bitmap (with the dynamic extension method).
+     *
+     * @param bmp The bitmap to modify.
+     */
     public void contrastDE(Bitmap bmp){
         int width=bmp.getWidth();
         int height=bmp.getHeight();
@@ -503,6 +523,7 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
+
     //diminution du contraste (reverse contrast)
     public void revContrastDE(Bitmap bmp, int max, int min){
         int width=bmp.getWidth();
@@ -526,7 +547,11 @@ public class MainActivity extends AppCompatActivity {
         bmp.setPixels(colors,0,width,0,0,width,height);
     }
 
-    //Contraste couleur (Egalisation d’histogramme)
+    /**
+     * Increase the contrast of the bitmap (with the histogram equalization method)
+     *
+     * @param bmp The bitmap to modify
+     */
     public void contrastHE(Bitmap bmp){ //indication : faire avec hsv et pas rgb
 
         int r,g,b;
@@ -572,6 +597,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     *  Apply a dimension (n * n) averaging filter on each pixel of the bitmap.
+     *
+     * @param bmp The bitmap to modify
+     * @param n Size of the averaging filter
+     */
     public void convolve(Bitmap bmp, int n){
         int height = bmp.getHeight();
         int width = bmp.getWidth();
@@ -591,8 +622,8 @@ public class MainActivity extends AppCompatActivity {
                     convolveColors[i+j]= Color.rgb(0,0,0);
                 }
                 else{
-                    for(int k=i-width*((n-1)/2); k<i+width*((n-1)/2); k+=width){
-                        for(int l=j-((n-1)/2); l<j+((n-1)/2); l++){
+                    for(int k=i-width*((n-1)/2); k<=i+width*((n-1)/2); k+=width){
+                        for(int l=j-((n-1)/2); l<=j+((n-1)/2); l++){
                             convolveValue_r+=Color.red(colors[k+l]);
                             convolveValue_g+=Color.green(colors[k+l]);
                             convolveValue_b+=Color.blue(colors[k+l]);

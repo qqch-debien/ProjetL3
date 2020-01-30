@@ -1,14 +1,11 @@
 <resources>
     <string name="app_name">Modif_image</string>
     <string name="size">size</string>
-    <string name="image_color">gray</string>
-    <string name="reset">Reset</string>
-    <string name="hue">Hue</string>
-    <string name="effect">Effect</string>
-    <string name="contrastDE">Dynamic extension</string>
-    <string name="imageDE">image DE</string>
-    <string name="contrastHE">Histogram equalization</string>
-    <string name="imageHE">gray image HE</string>
-    <string name="image">image</string>
-    <string name="decontrast">reverse contrast</string>
+    <string name="button1">gray</string>
+    <string name="button2">Reset</string>
+    <string name="button3">Hue</string>
+    <string name="button4">Effect</string>
+    <string name="button5">Dynamic extension</string>
+    <string name="button6">Histogram equalization</string>
+    <string name="button7">convolve</string>
 </resources>
